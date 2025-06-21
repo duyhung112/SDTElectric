@@ -249,18 +249,38 @@ app.get('/api/products', async (req, res) => {
 });
 
 // Thêm sản phẩm
+//app.post('/api/products', async (req, res) => {
+ // const { name, price, category_id, brand_id, image, featured, new: isNew } = req.body;
+ // try {
+ //   const [result] = await pool.query(
+ //     'INSERT INTO products (name, price, category_id, brand_id, image, featured, new_products) VALUES (?, ?, ?, ?, ?, ?, ?)',
+ //     [name, price, category_id, brand_id, image, featured || 0, isNew || 0]
+ //   );
+  //  res.json({ success: true, id: result.insertId });
+ // } catch (err) {
+ //   handleDbError(res, err);
+ // }
+//});
+// Thêm sản phẩm
 app.post('/api/products', async (req, res) => {
   const { name, price, category_id, brand_id, image, featured, new: isNew } = req.body;
   try {
+    // Kiểm tra độ dài đường dẫn ảnh
+    if (typeof image !== 'string' || image.length > 255) {
+      return res.status(400).json({ error: 'Đường dẫn ảnh không hợp lệ hoặc quá dài (tối đa 255 ký tự).' });
+    }
+
     const [result] = await pool.query(
       'INSERT INTO products (name, price, category_id, brand_id, image, featured, new_products) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [name, price, category_id, brand_id, image, featured || 0, isNew || 0]
     );
+    
     res.json({ success: true, id: result.insertId });
   } catch (err) {
     handleDbError(res, err);
   }
 });
+
 
 // Sửa sản phẩm
 app.put('/api/products/:id', async (req, res) => {
