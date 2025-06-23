@@ -71,20 +71,37 @@ function renderCategoryOptions(categories) {
 
 // Lọc và render sản phẩm
 function filterAndRender() {
-    const search = elements.searchInput.value.trim().toLowerCase();
-    const sort = elements.sortFilter.value;
-    let category = currentCategoryId || elements.categoryFilter.value || '';
+    if (!Array.isArray(allProducts) || allProducts.length === 0) {
+        filteredProducts = [];
+        renderProducts();
+        renderPagination();
+        return;
+    }
+    const search = elements.searchInput && elements.searchInput.value ? elements.searchInput.value.trim().toLowerCase() : '';
+    const sort = elements.sortFilter && elements.sortFilter.value ? elements.sortFilter.value : '';
+    let category = elements.categoryFilter && elements.categoryFilter.value !== undefined ? elements.categoryFilter.value : '';
+    if (currentCategoryId !== undefined && currentCategoryId !== null && currentCategoryId !== '') {
+        category = currentCategoryId;
+    }
 
-    // Lọc theo danh mục, tên, GIÁ
-    filteredProducts = allProducts.filter(p =>
-        (!category || String(p.category_id) === String(category)) &&
-        (!search || p.name.toLowerCase().includes(search)) &&
-        (typeof p.price === 'number' && p.price >= selectedMinPrice && p.price <= selectedMaxPrice)
-    );
+    // Nếu không chọn danh mục (category rỗng), hiển thị tất cả sản phẩm
+    if (!category) {
+        filteredProducts = allProducts.filter(p =>
+            (!search || (p.name && p.name.toLowerCase().includes(search))) &&
+            (p.price !== undefined && !isNaN(Number(p.price)) && Number(p.price) >= selectedMinPrice && Number(p.price) <= selectedMaxPrice)
+        );
+    } else {
+        // Lọc theo danh mục
+        filteredProducts = allProducts.filter(p =>
+            (String(p.category_id) === String(category)) &&
+            (!search || (p.name && p.name.toLowerCase().includes(search))) &&
+            (p.price !== undefined && !isNaN(Number(p.price)) && Number(p.price) >= selectedMinPrice && Number(p.price) <= selectedMaxPrice)
+        );
+    }
 
     // Sắp xếp
-    if (sort === 'price-asc') filteredProducts.sort((a, b) => a.price - b.price);
-    if (sort === 'price-desc') filteredProducts.sort((a, b) => b.price - a.price);
+    if (sort === 'price-asc') filteredProducts.sort((a, b) => Number(a.price) - Number(b.price));
+    if (sort === 'price-desc') filteredProducts.sort((a, b) => Number(b.price) - Number(a.price));
     if (sort === 'name-asc') filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
     if (sort === 'name-desc') filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
 
@@ -294,6 +311,8 @@ function debounce(func, wait) {
 document.addEventListener('DOMContentLoaded', async function() {
     allCategories = await fetchCategories();
     allProducts = await fetchProducts();
+
+    console.log('Sản phẩm từ API:', allProducts);
 
     // Lấy category từ URL nếu có
     const params = new URLSearchParams(window.location.search);

@@ -531,7 +531,7 @@ function renderNewProducts(products) {
     const grid = document.getElementById('new-arrivals');
     if (!grid) return;
 
-    const newProducts = products.filter(p => p.new == 1).slice(0, 4);
+    const newProducts = products.filter(p => p.new_products == 1).slice(0, 4);
     if (newProducts.length === 0) {
         grid.innerHTML = '<p style="text-align: center; color: #666;">Chưa có sản phẩm mới</p>';
         return;
@@ -688,8 +688,25 @@ async function initBanner() {
 // Initialize banner when DOM is loaded
 document.addEventListener('DOMContentLoaded', initBanner);
 
+// Render brands (thương hiệu đối tác) động từ API
+async function renderBrands() {
+    try {
+        const res = await fetch('/api/brands');
+        const brands = await res.json();
+        const wrapper = document.getElementById('brands-wrapper');
+        if (!wrapper) return;
+        if (!brands || brands.length === 0) {
+            wrapper.innerHTML = '<p style="text-align:center;color:#888;width:100%">Chưa có thương hiệu đối tác</p>';
+            return;
+        }
+        wrapper.innerHTML = brands.map(b => `
+            <div class="swiper-slide">
+                <img src="${b.logo || 'img/brands/default.png'}" alt="${b.name}" title="${b.name}">
+            </div>
+        `).join('');
+    } catch (err) {
+        console.error('Lỗi load brands:', err);
+    }
+}
 
-
-
-
-
+document.addEventListener('DOMContentLoaded', renderBrands);
