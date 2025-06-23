@@ -129,13 +129,13 @@ body, html {
     justify-content: center;
 }
 
-.search-box {
+.product-search-box {
     position: relative;
     flex: 1;
     max-width: 300px;
 }
 
-.search-box i {
+.product-search-icon {
     position: absolute;
     left: 12px;
     top: 50%;
@@ -143,7 +143,7 @@ body, html {
     color: #888;
 }
 
-.product-filter-bar input,
+.product-filter-bar .product-search-input,
 .product-filter-bar select {
     padding: 10px 15px 10px 35px;
     border-radius: 6px;
@@ -153,7 +153,7 @@ body, html {
     transition: border 0.3s;
 }
 
-.product-filter-bar input:focus,
+.product-filter-bar .product-search-input:focus,
 .product-filter-bar select:focus {
     border-color: #1976d2;
     outline: none;
