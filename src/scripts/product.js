@@ -341,12 +341,6 @@ app.get('/api/categories', async (req, res) => {
     res.json(rows);
 });
 
-// GET /api/products
-app.get('/api/products', async (req, res) => {
-    const [rows] = await db.execute('SELECT * FROM products');
-    res.json(rows);
-});
-
 function showQuickView(product) {
     const modal = document.getElementById('quick-view-modal');
     const content = modal.querySelector('.quick-view-content');

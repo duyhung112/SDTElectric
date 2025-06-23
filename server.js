@@ -210,15 +210,27 @@ app.delete('/api/categories/:id', async (req, res) => {
 
 // Lấy danh sách sản phẩm
 app.get('/api/products', async (req, res) => {
-  const [rows] = await db.execute('SELECT * FROM products');
-  res.json(rows);
+    try {
+        const [rows] = await pool.query('SELECT * FROM products');
+        res.json(rows);
+    } catch (err) {
+        console.error('GET /api/products error:', err);
+        handleDbError(res, err);
+    }
 });
 
 // Thêm sản phẩm
 app.post('/api/products', async (req, res) => {
-    const { name, price, category_id, brand_id, image, featured, new: isNew } = req.body;
+    let { name, price, category_id, brand_id, image, featured, new: isNew } = req.body;
     try {
-        if (!name || !price || !category_id || !image) {
+        // Ép kiểu an toàn cho các trường số
+        price = price !== undefined && price !== null && price !== '' ? Number(price) : null;
+        category_id = category_id !== undefined && category_id !== null && category_id !== '' ? Number(category_id) : null;
+        brand_id = brand_id !== undefined && brand_id !== null && brand_id !== '' ? Number(brand_id) : null;
+        featured = featured ? 1 : 0;
+        isNew = isNew ? 1 : 0;
+
+        if (!name || price === null || category_id === null || !image) {
             return res.status(400).json({ error: 'Thiếu thông tin bắt buộc!' });
         }
 
@@ -227,13 +239,15 @@ app.post('/api/products', async (req, res) => {
             return res.status(400).json({ error: 'Đường dẫn ảnh không hợp lệ hoặc quá dài (tối đa 255 ký tự).' });
         }
 
+        console.log('POST /api/products body:', req.body);
         const [result] = await pool.query(
             'INSERT INTO products (name, price, category_id, brand_id, image, featured, new_products) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [name, price, category_id, brand_id, image, featured || 0, isNew || 0]
+            [name, price, category_id, brand_id, image, featured, isNew]
         );
-
+        console.log('Insert result:', result);
         res.json({ success: true, id: result.insertId });
     } catch (err) {
+        console.error('POST /api/products error:', err);
         handleDbError(res, err);
     }
 });
