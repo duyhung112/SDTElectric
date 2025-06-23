@@ -78,8 +78,8 @@ function initMobileMenu() {
     }
 }
 
-
-
+// Mobile menu toggle
+initMobileMenu();
 
 
 
