@@ -212,23 +212,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     const res = await fetch('/api/banners');
     const banners = await res.json();
 
-    // Render banner
+    // Render banner KHÔNG có nút điều hướng
     bannerSlider.innerHTML = banners.map((banner, idx) => `
         <div class="banner-slide${idx === 0 ? ' active' : ''}">
             <img src="${banner.image}" alt="${banner.title || ''}" loading="lazy">
         </div>
-    `).join('') + `
-        <button class="banner-nav-btn banner-prev" aria-label="Previous">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="banner-nav-btn banner-next" aria-label="Next">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-    `;
+    `).join('');
 
     const slides = bannerSlider.querySelectorAll('.banner-slide');
-    const prevBtn = bannerSlider.querySelector('.banner-prev');
-    const nextBtn = bannerSlider.querySelector('.banner-next');
     let currentSlide = 0;
     let isTransitioning = false;
 
@@ -238,24 +229,17 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Remove active class from current slide
         slides[currentSlide].classList.remove('active');
-        
         // Update current slide index
         currentSlide = index;
         if (currentSlide >= slides.length) currentSlide = 0;
         if (currentSlide < 0) currentSlide = slides.length - 1;
-        
         // Add active class to new slide
         slides[currentSlide].classList.add('active');
-        
         // Reset transition lock after animation completes
         setTimeout(() => {
             isTransitioning = false;
         }, 800); // Match this with CSS transition duration
     }
-
-    // Event listeners for navigation buttons
-    prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
-    nextBtn.addEventListener('click', () => showSlide(currentSlide + 1));
 
     // Auto advance slides every 5 seconds
     let autoSlide = setInterval(() => showSlide(currentSlide + 1), 5000);
@@ -531,14 +515,15 @@ function renderNewProducts(products) {
     const grid = document.getElementById('new-arrivals');
     if (!grid) return;
 
-    const newProducts = products.filter(p => p.new_products == 1).slice(0, 4);
+    // Lấy tối đa 5 sản phẩm mới, không có điều hướng, không slider
+    const newProducts = products.filter(p => p.new_products == 1).slice(0, 5);
     if (newProducts.length === 0) {
         grid.innerHTML = '<p style="text-align: center; color: #666;">Chưa có sản phẩm mới</p>';
         return;
     }
 
     grid.innerHTML = newProducts.map(p => `
-        <div class="featured-card">
+        <div class="new-card">
             <span class="featured-badge" style="background:linear-gradient(90deg,#FFD600,#FFEA00);color:#222;">
                 <i class="fas fa-bolt"></i> New
             </span>
