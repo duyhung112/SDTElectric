@@ -531,7 +531,11 @@ function renderNewProducts(products) {
     const grid = document.getElementById('new-arrivals');
     if (!grid) return;
 
+<<<<<<< HEAD
     const newProducts = products.filter(p => p.new == 1).slice(0, 4);
+=======
+    const newProducts = products.filter(p => p.new_products == 1).slice(0, 4);
+>>>>>>> parent of c8bdae2 (update)
     if (newProducts.length === 0) {
         grid.innerHTML = '<p style="text-align: center; color: #666;">Chưa có sản phẩm mới</p>';
         return;
