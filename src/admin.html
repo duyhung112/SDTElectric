@@ -124,7 +124,7 @@
         <!-- Brands -->
         <div id="brands" class="tab-content">
             <div class="section-title">Quản lý Thương hiệu</div>
-            <button class="btn-add" onclick="addBrand()">+ Thêm Thương hiệu</button>
+            <button onclick="showBrandModal()">+ Thêm Thương hiệu</button>
             <table>
                 <thead>
                     <tr>
@@ -319,11 +319,6 @@
             <input type="checkbox" id="product-featured"> Sản phẩm nổi bật
         </label>
       </div>
-      <div class="form-group">
-        <label>
-            <input type="checkbox" id="product-new"> Sản phẩm mới
-        </label>
-      </div>
       <div class="modal-actions">
         <button type="submit" class="btn-primary">Lưu</button>
         <button type="button" class="btn-secondary" onclick="closeProductModal()">Hủy</button>
@@ -333,24 +328,23 @@
 </div>
 
 <!-- Modal Thêm Thương hiệu -->
-<div id="brand-modal" class="modal">
+<div id="brand-modal" class="modal" style="display:none">
   <div class="modal-content">
     <h2 id="brand-modal-title">Thêm Thương hiệu</h2>
     <form id="brand-form">
       <input type="hidden" id="brand-id">
       <div class="form-group">
         <label>Tên thương hiệu</label>
-        <input type="text" id="brand-name" name="name" required>
+        <input type="text" id="brand-name" required>
       </div>
       <div class="form-group">
         <label>Logo</label>
-        <input type="file" id="brand-logo" name="logo" accept="image/*">
-        <img id="brand-logo-preview" src="" alt="Logo Preview" class="image-preview">
-        <p id="brand-logo-upload-status" class="upload-status"></p>
+        <input type="file" id="brand-logo" accept="image/*">
+        <img id="brand-logo-preview" src="" alt="" style="max-width:80px;display:none;margin-top:6px;">
       </div>
       <div class="form-group">
         <label>Mô tả</label>
-        <input type="text" id="brand-description" name="description">
+        <input type="text" id="brand-description">
       </div>
       <div class="modal-actions">
         <button type="submit" class="btn-primary">Lưu</button>
