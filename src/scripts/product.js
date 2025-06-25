@@ -1,3 +1,33 @@
+// Hiển thị toast/thông báo UX hiện đại, tự động tạo #toast nếu thiếu
+function showToast(message, type = 'info') {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style.position = 'fixed';
+        toast.style.top = '32px';
+        toast.style.right = '32px';
+        toast.style.zIndex = '9999';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.className = `toast toast-${type}`;
+    toast.style.display = 'block';
+    toast.style.background = type === 'success' ? '#28a745' : type === 'warning' ? '#ffc107' : type === 'error' ? '#dc3545' : '#333';
+    toast.style.color = '#fff';
+    toast.style.padding = '12px 24px';
+    toast.style.borderRadius = '6px';
+    toast.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+    toast.style.fontSize = '16px';
+    toast.style.transition = 'opacity 0.3s';
+    toast.style.opacity = '1';
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => { toast.style.display = 'none'; }, 350);
+    }, 1800);
+}
+
 // Constants
 const PRODUCTS_PER_PAGE = 12;
 const API_BASE_URL = ''; // Để trống nếu gọi trực tiếp /api/...
@@ -148,11 +178,19 @@ function renderProducts() {
         };
     });
 
-    // Gán sự kiện cho nút "Thêm vào giỏ"
+    // Gán sự kiện cho tất cả nút Thêm vào giỏ hàng trên trang product
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.onclick = function() {
-            const id = this.dataset.id;
-            addToCart(id);
+            const productId = this.getAttribute('data-id');
+            const product = allProducts.find(p => String(p.id) === String(productId));
+            if (!product) return;
+            // Kiểm tra đăng nhập trước khi thêm vào giỏ hàng
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                showToast('Vui lòng đăng nhập để mua hàng!', 'warning');
+                return;
+            }
+            addToCart(product);
         };
     });
 }
@@ -361,26 +399,41 @@ function showQuickView(product) {
     modal.querySelector('.close-modal').onclick = () => modal.style.display = 'none';
     modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
 
-    // Nút thêm vào giỏ trong modal
+    // Nút thêm vào giỏ trong modal: kiểm tra đăng nhập trước khi thêm
     content.querySelector('.add-to-cart-btn').onclick = function() {
-        addToCart(product.id);
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            showToast('Vui lòng đăng nhập để mua hàng!', 'warning');
+            return;
+        }
+        addToCart(product);
     };
 }
 
-// Add to cart function
-function addToCart(productId) {
+// Add to cart function (nhận object product)
+function addToCart(product) {
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const prod = allProducts.find(p => String(p.id) === String(productId));
-    if (!prod) return;
-    const idx = cart.findIndex(item => String(item.id) === String(productId));
+    const idx = cart.findIndex(item => String(item.id) === String(product.id));
     if (idx > -1) {
         cart[idx].quantity += 1;
     } else {
-        cart.push({ id: prod.id, name: prod.name, price: prod.price, image: prod.image, quantity: 1 });
+        cart.push({ id: product.id, name: product.name, price: product.price, image: product.image, quantity: 1 });
     }
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
-    alert('Đã thêm vào giỏ hàng!');
+    showToast('Đã thêm vào giỏ hàng!', 'success');
+}
+
+// Kiểm tra đăng nhập trước khi thêm vào giỏ hàng (chỉ dùng ở trang product)
+function handleAddToCart(product) {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+        showToast('Vui lòng đăng nhập để mua hàng!', 'warning');
+        // Nếu muốn chuyển hướng sang trang đăng nhập:
+        // setTimeout(() => window.location.href = 'login.html', 1200);
+        return;
+    }
+    addToCart(product);
 }
 
 // Update cart count

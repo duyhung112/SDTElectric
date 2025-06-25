@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(res => res.text())
         .then(html => {
             document.getElementById('header').innerHTML = html;
+            // Gọi lại renderUserHeader sau khi heade            // Theo dõi thay đổi user để cập nhật header khi đăng nhập thành công
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'user') {
+                    renderUserHeader();
+                }
+            });
         });
 
     // Đổ footer

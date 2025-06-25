@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Giỏ hàng</title>
+    <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/cart.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/> 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
 </head>
 <body>
     <div id="header"></div>
@@ -39,9 +43,9 @@
                         <div class="col-total">Thành tiền</div>
                         <div class="col-action"></div>
                     </div>
-
                     <div class="cart-items-list" id="cart-items-container">
-                        <!-- Cart items will be loaded here by JavaScript -->
+                        <!-- Sample Cart Item -->
+
                     </div>
 
                     <div class="cart-actions">
@@ -49,7 +53,7 @@
                             <i class="fas fa-arrow-left"></i> Tiếp tục mua sắm
                         </button>
                         <button class="btn-clear-cart">
-                            <i class="fas fa-trash"></i> Xóa giỏ hàng
+                            <i class="fas fa-trash-alt"></i> Xóa giỏ hàng
                         </button>
                     </div>
                 </div>
@@ -57,52 +61,45 @@
                 <div class="cart-summary">
                     <div class="summary-card">
                         <h3>TÓM TẮT ĐƠN HÀNG</h3>
-                        
                         <div class="summary-row">
                             <span>Tạm tính</span>
-                            <span id="subtotal">0₫</span>
+                            <span id="subtotal">39.970.000₫</span>
                         </div>
-                        
                         <div class="summary-row">
                             <span>Giảm giá</span>
                             <span id="discount">0₫</span>
                         </div>
-                        
                         <div class="summary-row">
                             <span>Phí vận chuyển</span>
                             <span id="shipping">0₫</span>
                         </div>
-                        
                         <div class="summary-divider"></div>
-                        
                         <div class="summary-row total">
                             <span>Tổng cộng</span>
-                            <span id="total">0₫</span>
+                            <span id="total">38.970.000₫</span>
                         </div>
-                        
+
                         <div class="coupon-section">
-                            <input type="text" id="coupon-code" placeholder="Mã giảm giá">
+                            <input type="text" id="coupon-code" placeholder="Nhập mã giảm giá">
                             <button id="apply-coupon">ÁP DỤNG</button>
                         </div>
-                        
+
                         <button class="btn-checkout">
                             TIẾN HÀNH THANH TOÁN <i class="fas fa-arrow-right"></i>
                         </button>
-                        
                         <div class="secure-checkout">
                             <i class="fas fa-lock"></i>
                             <span>Thanh toán an toàn & bảo mật</span>
                         </div>
                     </div>
-                    
+
                     <div class="payment-methods">
                         <h4>CHẤP NHẬN THANH TOÁN</h4>
                         <div class="payment-icons">
-                            <img src="images/payment/visa.png" alt="Visa">
-                            <img src="images/payment/mastercard.png" alt="Mastercard">
-                            <img src="images/payment/jcb.png" alt="JCB">
-                            <img src="images/payment/momo.png" alt="Momo">
-                            <img src="images/payment/zalopay.png" alt="ZaloPay">
+                            <a href="#" title="Visa"><i class="fab fa-cc-visa fa-2x" style="color:#1565c0;"></i></a>
+                            <a href="#" title="Mastercard"><i class="fab fa-cc-mastercard fa-2x" style="color:#e17055;"></i></a>
+                            <a href="#" title="Momo"><i class="fas fa-mobile-alt fa-2x" style="color:#a259c4;"></i></a>
+                            <a href="#" title="ZaloPay"><i class="fas fa-wallet fa-2x" style="color:#0984e3;"></i></a>
                         </div>
                     </div>
                 </div>
@@ -112,6 +109,9 @@
 
     <div id="footer"></div>
 
-    <script src="scripts/cart.js" type="module"></script>
+    <div class="toast" id="toast"></div>
+
 </body>
+<script src="scripts/cart.js"></script>
+<script src="scripts/main.js"></script>
 </html>

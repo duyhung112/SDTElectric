@@ -334,6 +334,51 @@ function handleBackToTop() {
     });
 }
 
+// Hiển thị user info ở header: icon khi chưa đăng nhập, tên + nút đăng xuất khi đã đăng nhập
+function renderUserHeader() {
+    let headerIcons = document.querySelector('.header-icons');
+    if (!headerIcons) return;
+    // Xóa icon user cũ (nếu có)
+    const userIcon = headerIcons.querySelector('a[aria-label="Tài khoản"]');
+    if (userIcon) userIcon.remove();
+    // Xóa user-info cũ nếu có
+    let oldUserInfo = document.getElementById('user-info-header');
+    if (oldUserInfo) oldUserInfo.remove();
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.username) {
+        // Đã đăng nhập: hiện tên và nút đăng xuất ở vị trí đầu tiên
+        const userInfo = document.createElement('div');
+        userInfo.id = 'user-info-header';
+        userInfo.style.display = 'inline-flex';
+        userInfo.style.alignItems = 'center';
+        userInfo.style.gap = '8px';
+        userInfo.innerHTML = `
+            <span class="user-name" style="font-weight:500;color:#333;"><i class="fas fa-user-circle"></i> ${user.username}</span>
+            <button id="logout-btn-header" style="margin-left:8px;padding:4px 12px;border:none;background:#dc3545;color:#fff;border-radius:4px;cursor:pointer;">Đăng xuất</button>
+        `;
+        headerIcons.prepend(userInfo);
+        const logoutBtn = document.getElementById('logout-btn-header');
+        if (logoutBtn) {
+            logoutBtn.onclick = function() {
+                localStorage.removeItem('user');
+                renderUserHeader();
+                window.location.href = 'login.html';
+            };
+        }
+    } else {
+        // Chưa đăng nhập: thêm lại icon user vào đầu header-icons
+        const userLink = document.createElement('a');
+        userLink.href = 'login.html';
+        userLink.setAttribute('aria-label', 'Tài khoản');
+        userLink.innerHTML = '<i class="far fa-user"></i>';
+        headerIcons.prepend(userLink);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    renderUserHeader();
+});
+
 // Initialize the page
 function init() {
     initSliders();
@@ -346,6 +391,7 @@ function init() {
 // Run when DOM is loaded
 document.addEventListener('DOMContentLoaded', init);
 
+// Xử lý đăng nhập
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.querySelector('.login-form');
     if (loginForm) {
@@ -355,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const password = document.getElementById('password').value.trim();
 
             if (!username || !password) {
-                alert('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!');
+                showToast('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!', 'warning');
                 return;
             }
 
@@ -368,17 +414,101 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = await res.json();
 
                 if (res.ok && data.success) {
+                    // Lưu user vào localStorage đúng chuẩn
+                    localStorage.setItem('user', JSON.stringify({ username: data.username, role: data.role }));
+                    // Hiển thị thông báo đăng nhập thành công
+                    localStorage.setItem('loginSuccess', '1');
+                    renderUserHeader();
                     if (data.role === 'admin') {
                         window.location.href = 'admin.html';
                     } else {
                         window.location.href = 'index.html';
                     }
                 } else {
-                    alert(data.error || 'Đăng nhập thất bại!');
+                    showToast(data.error || 'Đăng nhập thất bại!', 'error');
                 }
             } catch (err) {
-                alert('Có lỗi khi kết nối server!');
+                showToast('Có lỗi khi kết nối server!', 'error');
             }
         };
     }
 });
+
+// Xử lý đăng ký user
+document.addEventListener('DOMContentLoaded', function() {
+    const registerForm = document.querySelector('.register-form');
+    if (registerForm) {
+        registerForm.onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(registerForm);
+            const username = formData.get('username').trim();
+            const email = formData.get('email').trim();
+            const phone = formData.get('phone').trim();
+            const password = formData.get('password').trim();
+            const confirmPassword = formData.get('confirm_password').trim();
+
+            if (!username || !email || !phone || !password || !confirmPassword) {
+                showToast('Vui lòng nhập đầy đủ thông tin!', 'warning');
+                return;
+            }
+            if (password !== confirmPassword) {
+                showToast('Mật khẩu nhập lại không khớp!', 'warning');
+                return;
+            }
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, phone, password })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast('Đăng ký thành công! Vui lòng đăng nhập.', 'success');
+                    setTimeout(() => window.location.href = 'login.html', 1200);
+                } else {
+                    showToast(data.error || 'Đăng ký thất bại!', 'error');
+                }
+            } catch (err) {
+                showToast('Có lỗi khi kết nối server!', 'error');
+            }
+        };
+    }
+});
+
+// Hiển thị toast đăng nhập thành công sau chuyển hướng
+document.addEventListener('DOMContentLoaded', function() {
+    if (localStorage.getItem('loginSuccess') === '1') {
+        showToast('Đăng nhập thành công!', 'success');
+        localStorage.removeItem('loginSuccess');
+    }
+});
+
+// Hiển thị toast/thông báo UX hiện đại, tự động tạo #toast nếu thiếu
+function showToast(message, type = 'info') {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style.position = 'fixed';
+        toast.style.top = '32px';
+        toast.style.right = '32px';
+        toast.style.zIndex = '9999';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.className = `toast toast-${type}`;
+    toast.style.display = 'block';
+    toast.style.background = type === 'success' ? '#28a745' : type === 'warning' ? '#ffc107' : type === 'error' ? '#dc3545' : '#333';
+    toast.style.color = '#fff';
+    toast.style.padding = '12px 24px';
+    toast.style.borderRadius = '6px';
+    toast.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+    toast.style.fontSize = '16px';
+    toast.style.transition = 'opacity 0.3s';
+    toast.style.opacity = '1';
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => { toast.style.display = 'none'; }, 350);
+    }, 1800);
+}       
