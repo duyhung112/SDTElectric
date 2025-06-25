@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles/common.css">
     <link rel="stylesheet" href="styles/product.css">
     <script src="scripts/main.js"></script>
+    <script src="scripts/product.js"></script>
     <script src="scripts/cart.js"></script>
     <link rel="icon" href="img/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -21,9 +22,7 @@
     <div class="product-page">
         <aside class="sidebar">
             <h2 class="sidebar-title">DANH MỤC SẢN PHẨM</h2>
-            <ul id="product-category-list" class="category-list">
-                
-            </ul>
+            <ul id="product-category-list" class="category-list"></ul>
         </aside>
         
         <main class="product-container">
@@ -36,9 +35,9 @@
             <h1 class="page-title">SẢN PHẨM</h1>
             
             <div class="product-filter-bar">
-                <div class="product-search-box">
-                    <input type="text" id="search-input" class="product-search-input" placeholder="Tìm kiếm sản phẩm...">
-                    <i class="fas fa-search product-search-icon"></i>
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Tìm kiếm sản phẩm...">
+                    <i class="fas fa-search"></i>
                 </div>
                 <select id="category-filter"></select>
                 <select id="sort-filter">
@@ -82,7 +81,6 @@
     
     <div id="footer"></div>
     
-
     <script src="scripts/product.js" type="module"></script>
 </body>
 </html>
